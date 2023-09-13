@@ -1,0 +1,7 @@
+Pain-T Version 0.1.0 - 09/11/2023
+Can open files 
+Canvases developed 
+Pain-T Version 0.0.1 - 09/08/2023
+New features
+Photo pops up
+Menu Bar begun implementation
