@@ -27,15 +27,16 @@ public class Drawing {
 
 
         newProject.setOnMousePressed((MouseEvent pain) ->{
-
+            //look to see if pen is typed
             try{
                 penWidth = Double.parseDouble(UI.getWidthDou().getText());
             } catch (NumberFormatException e) {
+                //If someone types a string returns penWidth to default 3
                 penWidth = 3;
             }
 
             inItDraw(gc, penWidth, UI.getColorPicker().getValue());
-
+            //get starting location
             xMouse = pain.getX();
             yMouse = pain.getY();
             if(UI.getPen().isSelected()){
@@ -58,7 +59,7 @@ public class Drawing {
 
         newProject.setOnMouseReleased((MouseEvent dragEnd ) ->{
             if(UI.getPen().isSelected()){
-
+                //for future use
             }
         });
 
@@ -67,6 +68,7 @@ public class Drawing {
     }
 
     public static void inItDraw(GraphicsContext gc, double width, Color color){
+        //changes the pen's stats
         gc.setStroke(color);
         gc.setLineWidth(width);
     }

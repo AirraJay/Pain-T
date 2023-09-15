@@ -12,15 +12,17 @@ public class UI {
     private static ColorPicker colorPicker;
 
     public UI(){
+
         pen = new ToggleButton("Pen");
         toolBar = new ToolBar();
+        //allows pen to open
         pen.setOnAction(penB ->{
             pen.setSelected(true);
         });
         toolBar.getItems().add(pen);
         Label yVarSt = new Label("Width");
         toolBar.getItems().add(yVarSt);
-
+        //puts the string on the text field
         widthDou = new TextField(Drawing.getPenWidth() + "");
         colorPicker = new ColorPicker();
 

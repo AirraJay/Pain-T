@@ -127,6 +127,7 @@ public class MenuLayout {
         TextArea ta = new TextArea();
         Scene scene = new Scene(ta);
 
+        //changes Print output
         System.setOut(new PrintStream(new OutputStream() {
 
             @Override
@@ -148,6 +149,8 @@ public class MenuLayout {
         DialogStage.setScene(scene);
         DialogStage.show();
         FileReader fr;
+
+        //reads file
         try {
             fr = new FileReader(f);
         } catch (FileNotFoundException e) {
