@@ -20,7 +20,7 @@ import java.io.*;
 
 public class MenuLayout {
 
-    final MenuItem Save, SaveAs, Open,releaseNotes, About;
+    final MenuItem Save, SaveAs, Open,releaseNotes, About, HelpIt;
     private final MenuBar menuBar;
 
     final Menu File, Help;
@@ -29,8 +29,9 @@ public class MenuLayout {
 
     private File saveFile;
 
-    private File releaseNotesFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/ReleaseNotes/ReleaseNotesPain-T.txt");
-
+    private final File releaseNotesFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/ReleaseNotesPain-T.txt");
+    private final File aboutFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/about.txt");
+    private final File helpFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/help.txt");
 
 
     public MenuLayout(){
@@ -45,6 +46,7 @@ public class MenuLayout {
         Open = new MenuItem("Open");
         releaseNotes = new MenuItem("Release Notes");
         About = new MenuItem("About");
+        HelpIt = new MenuItem("Help");
 
 
 
@@ -64,8 +66,9 @@ public class MenuLayout {
 
         Help.getItems().add(releaseNotes);
         Help.getItems().add(About);
+        Help.getItems().add(HelpIt);
 
-        Save.setOnAction(e -> {
+        Save.setOnAction(actionEvent -> {
             if(saveFile == null){
                 try {
                     saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
@@ -87,7 +90,7 @@ public class MenuLayout {
 
 
 
-        SaveAs.setOnAction(q -> {
+        SaveAs.setOnAction(actionEvent -> {
             try {
                 saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
 
@@ -96,13 +99,22 @@ public class MenuLayout {
             }
         });
 
-        Open.setOnAction(t -> {
+        Open.setOnAction(actionEvent -> {
             openImage(saveFile, pickAFile, Drawing.getNewProject(), homeStage);
         });
 
-        releaseNotes.setOnAction(w -> {
+        releaseNotes.setOnAction(actionEvent -> {
             windowWithDialog(releaseNotesFile);
         });
+
+        About.setOnAction(actionEvent -> {
+            windowWithDialog(aboutFile);
+        });
+
+        HelpIt.setOnAction(actionEvent -> {
+            windowWithDialog(helpFile);
+        });
+
 
 
 
@@ -118,17 +130,17 @@ public class MenuLayout {
         System.setOut(new PrintStream(new OutputStream() {
 
             @Override
-            public void write(int b) throws IOException {
+            public void write(int b){
                 ta.appendText("" + ((char) b));
             }
 
             @Override
-            public void write(byte[] b) throws IOException {
+            public void write(byte[] b){
                 ta.appendText(new String(b));
             }
 
             @Override
-            public void write(byte[] b, int off, int len) throws IOException {
+            public void write(byte[] b, int off, int len){
                 ta.appendText(new String(b, off, len));
             }
         }));
@@ -141,15 +153,15 @@ public class MenuLayout {
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-
+        boolean j = true;
         int i;
         // Holds true till there is nothing to read
-        while (true)
+        while (j)
 
         // Print all the content of a file
         {
             try {
-                if (!((i = fr.read()) != -1)) break;
+                if (((i = fr.read()) == -1)) j = false;
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }

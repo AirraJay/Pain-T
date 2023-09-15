@@ -1,0 +1,4 @@
+Pen - Click the button to be able to start using the pen
+Color picker - Click the button with the color to select a color
+Width - In the text box next to width, click and type a number than start drawing
+File - File has save, save as, and open

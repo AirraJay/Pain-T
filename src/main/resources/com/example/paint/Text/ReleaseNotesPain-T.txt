@@ -1,0 +1,11 @@
+Pain-T Version 0.2.0 - 09/14/2023
+A fuctional pen has been created with the ability to change the color and width of said pen
+Help, about, and Release notes menu has been added
+A blank canvas is opened immediately upon starting the program
+Pain-T Version 0.1.0 - 09/11/2023
+Can open files 
+Canvases developed 
+Pain-T Version 0.0.1 - 09/08/2023
+New features
+Photo pops up
+Menu Bar begun implementation

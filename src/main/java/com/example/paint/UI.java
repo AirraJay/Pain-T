@@ -23,11 +23,12 @@ public class UI {
 
         widthDou = new TextField(Drawing.getPenWidth() + "");
         colorPicker = new ColorPicker();
-        toolBar.getItems().add(colorPicker);
+
 
         double widthChange;
 
         toolBar.getItems().add(widthDou);
+        toolBar.getItems().add(colorPicker);
 
     }
 
