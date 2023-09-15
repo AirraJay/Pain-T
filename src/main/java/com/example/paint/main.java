@@ -6,6 +6,8 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.io.File;
@@ -20,13 +22,21 @@ public class main extends Application{
 
         //call menuLayout
         MenuLayout thisLayout = new MenuLayout();
+        Drawing thisDrawing = new Drawing();
+        UI thisUI = new UI();
+        VBox layout = new VBox(thisLayout.getMenuBar(), thisUI.getToolBar());
 
         //BoarderPane
 
         border = new BorderPane();
 
+        Pane newCanvas = new Pane(Drawing.getNewProject());
+        border.setCenter(newCanvas);
+
+
+
         //border.setCenter(root);
-        border.setTop(thisLayout.getMenuBar());
+        border.setTop(layout);
         //Setting the Scene object
 
         Scene scene = new Scene(border, 595, 370);
@@ -56,7 +66,7 @@ public class main extends Application{
         Image img = new Image(file.toURI().toString());
         GraphicsContext gc = canvas.getGraphicsContext2D();
 
-        //gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+        gc.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 
         //readies image for displaying
         canvas.setWidth(img.getWidth());

@@ -1,0 +1,2 @@
+This a project based on Microsoft Paint made by Aubrey Kranz which is written for CS 250, a class about object programming.
+It is currently in progress as of September 14, 2023.

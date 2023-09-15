@@ -2,19 +2,21 @@ package com.example.paint;
 
 
 import javafx.embed.swing.SwingFXUtils;
+import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import javax.imageio.ImageIO;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+
 
 public class MenuLayout {
 
@@ -27,10 +29,12 @@ public class MenuLayout {
 
     private File saveFile;
 
-    private final Canvas newProject;
+    private File releaseNotesFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/ReleaseNotes/ReleaseNotesPain-T.txt");
+
+
 
     public MenuLayout(){
-        newProject = new Canvas();
+
 
         File = new Menu("File");
         Help = new Menu("Help");
@@ -41,6 +45,8 @@ public class MenuLayout {
         Open = new MenuItem("Open");
         releaseNotes = new MenuItem("Release Notes");
         About = new MenuItem("About");
+
+
 
 
         Stage homeStage = main.getMyStage();
@@ -56,10 +62,13 @@ public class MenuLayout {
 
         pickAFile = new FileChooser();
 
+        Help.getItems().add(releaseNotes);
+        Help.getItems().add(About);
+
         Save.setOnAction(e -> {
             if(saveFile == null){
                 try {
-                    saveImageAs( pickAFile, newProject, homeStage);
+                    saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -67,7 +76,7 @@ public class MenuLayout {
             }
             else{
                 try {
-                    saveImage(saveFile, newProject);
+                    saveImage(saveFile, Drawing.getNewProject());
 
                 } catch (IOException ex) {
                     // handle exception...
@@ -80,19 +89,74 @@ public class MenuLayout {
 
         SaveAs.setOnAction(q -> {
             try {
-                saveImageAs( pickAFile, newProject, homeStage);
+                saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
+
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
         });
 
         Open.setOnAction(t -> {
-            openImage(saveFile, pickAFile, newProject, homeStage);
+            openImage(saveFile, pickAFile, Drawing.getNewProject(), homeStage);
+        });
+
+        releaseNotes.setOnAction(w -> {
+            windowWithDialog(releaseNotesFile);
         });
 
 
 
     }
+
+    public void windowWithDialog(File f){
+        Stage DialogStage = new Stage();
+
+
+        TextArea ta = new TextArea();
+        Scene scene = new Scene(ta);
+
+        System.setOut(new PrintStream(new OutputStream() {
+
+            @Override
+            public void write(int b) throws IOException {
+                ta.appendText("" + ((char) b));
+            }
+
+            @Override
+            public void write(byte[] b) throws IOException {
+                ta.appendText(new String(b));
+            }
+
+            @Override
+            public void write(byte[] b, int off, int len) throws IOException {
+                ta.appendText(new String(b, off, len));
+            }
+        }));
+
+        DialogStage.setScene(scene);
+        DialogStage.show();
+        FileReader fr;
+        try {
+            fr = new FileReader(f);
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+
+        int i;
+        // Holds true till there is nothing to read
+        while (true)
+
+        // Print all the content of a file
+        {
+            try {
+                if (!((i = fr.read()) != -1)) break;
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            System.out.print((char) i);
+        }
+    }
+
 
 
 
@@ -129,4 +193,5 @@ public class MenuLayout {
     public MenuBar getMenuBar(){
         return menuBar;
     }
+
 }
