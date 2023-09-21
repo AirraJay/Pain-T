@@ -17,11 +17,18 @@ public class Drawing {
 
     private static double penWidth = 3;
 
+    private static Object thisShape;
+
+    int Polysides;
+
     public Drawing(){
 
-
+        Shapes runShapes = new Shapes();
         newProject = new Canvas(1920, 1080);
         gc = newProject.getGraphicsContext2D();
+
+        Shapes loadShapes = new Shapes();
+
 
 
 
@@ -36,6 +43,8 @@ public class Drawing {
             }
 
             inItDraw(gc, penWidth, UI.getColorPicker().getValue());
+
+
             //get starting location
             xMouse = pain.getX();
             yMouse = pain.getY();
@@ -44,6 +53,10 @@ public class Drawing {
                 gc.moveTo(xMouse, yMouse);
                 gc.stroke();
             }
+            if(UI.getWhatShape() != null && UI.getWhatShape() != "Shapes") {
+                thisShape = UI.getWhatShape();
+                }
+
 
         });
 
@@ -51,15 +64,58 @@ public class Drawing {
             secondX = drag.getX();
             secondY = drag.getY();
 
-            if(UI.getPen().isSelected()){
+            if (UI.getPen().isSelected()) {
                 gc.lineTo(secondX, secondY);
                 gc.stroke();
             }
+
+                try{
+                    Polysides = Integer.parseInt(UI.getPolygonSides().getText());
+                }
+                catch(Exception e){
+                    Polysides = 3;
+                }
+
+
         });
 
         newProject.setOnMouseReleased((MouseEvent dragEnd ) ->{
             if(UI.getPen().isSelected()){
                 //for future use
+            }
+
+            if(thisShape.toString() != null && thisShape.toString() != "Shapes") {
+                switch (thisShape.toString()) {
+                    case "Line": {
+                        runShapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
+                        break;
+                    }
+                    case "Square": {
+                        runShapes.drawSquare(gc, xMouse, yMouse, secondX, secondY);
+                        break;
+                    }
+                    case "Circle": {
+                        runShapes.drawCircle(gc, xMouse, yMouse, secondX, secondY);
+                        break;
+                    }
+                    case "Rectangle": {
+                        runShapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
+                        break;
+                    }
+                    case "Ellipse": {
+                        runShapes.drawEllipse(gc, xMouse, yMouse, secondX, secondY);
+                        break;
+                    }
+                    case "Polygon": {
+                        if(UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null){
+                            runShapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
+                        }
+                        else{
+                            runShapes.drawPolygon(gc, 3, xMouse, yMouse, secondX, secondY);
+                        }
+                        break;
+                    }
+                }
             }
         });
 
@@ -71,6 +127,7 @@ public class Drawing {
         //changes the pen's stats
         gc.setStroke(color);
         gc.setLineWidth(width);
+
     }
 
 
