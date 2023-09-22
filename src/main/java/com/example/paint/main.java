@@ -39,7 +39,7 @@ public class main extends Application{
         border.setTop(layout);
         //Setting the Scene object
 
-        Scene scene = new Scene(border, 595, 370);
+        Scene scene = new Scene(border, 1800, 1020);
         stage.setTitle("Displaying Image");
         stage.setScene(scene);
 

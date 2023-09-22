@@ -2,6 +2,9 @@ package com.example.paint;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.ComboBox;
+import javafx.scene.image.PixelReader;
+import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 
@@ -9,7 +12,6 @@ import javafx.scene.paint.Color;
 public class Drawing {
 
 
-    private Canvas mainCan;
     private static GraphicsContext gc;
     private static Canvas newProject;
 
@@ -32,7 +34,6 @@ public class Drawing {
 
 
 
-
         newProject.setOnMousePressed((MouseEvent pain) ->{
             //look to see if pen is typed
             try{
@@ -42,7 +43,7 @@ public class Drawing {
                 penWidth = 3;
             }
 
-            inItDraw(gc, penWidth, UI.getColorPicker().getValue());
+            inItDraw(gc, penWidth, UI.getColorPicker().getValue(), UI.getSpacedDashes());
 
 
             //get starting location
@@ -56,6 +57,9 @@ public class Drawing {
             if(UI.getWhatShape() != null && UI.getWhatShape() != "Shapes") {
                 thisShape = UI.getWhatShape();
                 }
+            else{
+                thisShape = null;
+            }
 
 
         });
@@ -83,8 +87,7 @@ public class Drawing {
             if(UI.getPen().isSelected()){
                 //for future use
             }
-
-            if(thisShape.toString() != null && thisShape.toString() != "Shapes") {
+            try {
                 switch (thisShape.toString()) {
                     case "Line": {
                         runShapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
@@ -107,27 +110,45 @@ public class Drawing {
                         break;
                     }
                     case "Polygon": {
-                        if(UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null){
+                        if (UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null) {
                             runShapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
-                        }
-                        else{
+                        } else {
                             runShapes.drawPolygon(gc, 3, xMouse, yMouse, secondX, secondY);
                         }
                         break;
                     }
                 }
+
+
+            } catch (Exception y){
+
+            }
+
+            });
+
+        newProject.setOnMouseClicked((MouseEvent click )-> {
+
+            if(UI.getColorPick().isSelected() == true){
+                WritableImage wi = new WritableImage((int) newProject.getWidth(), (int) newProject.getHeight());
+                newProject.snapshot(null, wi);
+                PixelReader pr = wi.getPixelReader();
+                UI.getColorPicker().setValue(pr.getColor((int) click.getX(), (int) click.getY()));
             }
         });
 
 
 
+
+
     }
 
-    public static void inItDraw(GraphicsContext gc, double width, Color color){
+    public static void inItDraw(GraphicsContext gc, double width, Color color, ComboBox dashes){
         //changes the pen's stats
+
+        double dash = Double.parseDouble(dashes.getValue().toString());
         gc.setStroke(color);
         gc.setLineWidth(width);
-
+        gc.setLineDashes(new double[] {dash, dash * 1.3,dash, dash * 1.3});
     }
 
 

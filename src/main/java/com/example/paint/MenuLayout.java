@@ -11,8 +11,10 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
+import javafx.scene.input.KeyCombination;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+
 
 import javax.imageio.ImageIO;
 import java.io.*;
@@ -87,7 +89,7 @@ public class MenuLayout {
             }
 
         });
-
+        Save.setAccelerator(KeyCombination.keyCombination("Ctrl + S" ));
 
 
         SaveAs.setOnAction(actionEvent -> {
@@ -99,9 +101,12 @@ public class MenuLayout {
             }
         });
 
+        SaveAs.setAccelerator(KeyCombination.keyCombination("Ctrl + Shift + S"));
+
         Open.setOnAction(actionEvent -> {
             openImage(saveFile, pickAFile, Drawing.getNewProject(), homeStage);
         });
+        Open.setAccelerator(KeyCombination.keyCombination("Ctrl + O" ));
 
         releaseNotes.setOnAction(actionEvent -> {
             windowWithDialog(releaseNotesFile);
