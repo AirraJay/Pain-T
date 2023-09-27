@@ -4,21 +4,23 @@ package com.example.paint;
 import javafx.scene.canvas.GraphicsContext;
 import java.lang.Math;
 
-public class Shapes {
+public abstract class Shapes {
 
     public Shapes(){
 
 
     }
 
-    public void drawLine(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    //line
+    public static void drawLine(GraphicsContext gc, double x, double y, double secondX, double secondY){
         
 
         gc.strokeLine(x, y, secondX, secondY);
 
     }
 
-    public void drawSquare(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    //square
+    public static void drawSquare(GraphicsContext gc, double x, double y, double secondX, double secondY){
         //Down and left
         if(secondX >= x && secondY  >= y){
             gc.strokeRect(secondX, secondY, secondX - x, secondX - x);
@@ -36,7 +38,8 @@ public class Shapes {
         }
     }
 
-    public void drawCircle(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    //circle
+    public static void drawCircle(GraphicsContext gc, double x, double y, double secondX, double secondY){
         //Down and left
         if(secondX >= x && secondY >= y){
             gc.strokeOval(x, y, secondX - x, secondX- x);
@@ -58,7 +61,8 @@ public class Shapes {
 
     }
 
-    public void drawRectangle(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    //rectangle
+    public static void drawRectangle(GraphicsContext gc, double x, double y, double secondX, double secondY){
         double height = Math.abs(secondY - y);
         double length = Math.abs(secondX - x);
 
@@ -84,7 +88,34 @@ public class Shapes {
 
     }
 
-    public void drawEllipse(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    public void drawRoundRectangle(GraphicsContext gc, double x, double y, double secondX, double secondY){
+        double height = Math.abs(secondY - y);
+        double length = Math.abs(secondX - x);
+
+
+        if(secondX >= x && secondY >= y){
+
+            gc.strokeRoundRect(x, y, length, height, 25, 25);
+        }
+        //Up and left
+        else if (secondX <= x && secondY <= y) {
+            gc.strokeRoundRect(secondX, secondY, length, height, 25, 25);
+        }
+        //Up and right
+        else if (secondX >= x && secondY <= y) {
+            gc.strokeRoundRect(x, secondY, length, height, 25, 25 );
+
+        }
+        //Down and right
+        else if (secondX <= x && secondY >= y) {
+            gc.strokeRoundRect(secondX, y, length, height, 25, 25);
+
+        }
+
+    }
+
+    //Ellipse
+    public static void drawEllipse(GraphicsContext gc, double x, double y, double secondX, double secondY){
         double height = Math.abs(secondY - y);
         double length = Math.abs(secondX - x);
 
@@ -109,6 +140,7 @@ public class Shapes {
         }
     }
 
+    //Polygons
     public static void drawPolygon(GraphicsContext gc, int polySides, double x, double y, double secondX, double secondY){
         double[] xPoints = new double[polySides];
         double[] yPoints = new double[polySides];

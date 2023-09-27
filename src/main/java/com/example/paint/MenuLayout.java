@@ -5,40 +5,44 @@ import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.Scene;
 import javafx.scene.SnapshotParameters;
 import javafx.scene.canvas.Canvas;
-import javafx.scene.control.Menu;
-import javafx.scene.control.MenuBar;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.TextArea;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.KeyCombination;
+import javafx.scene.layout.TilePane;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-
 import javax.imageio.ImageIO;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class MenuLayout {
 
-    final MenuItem Save, SaveAs, Open,releaseNotes, About, HelpIt;
+    final MenuItem Save, SaveAs, Open,releaseNotes, About, HelpIt, changeSize, AddTab;
     private final MenuBar menuBar;
 
     final Menu File, Help;
 
-    private final FileChooser pickAFile;
+    private static final FileChooser pickAFile = new FileChooser();
 
-    private File saveFile;
+    private static File saveFile;
 
     private final File releaseNotesFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/ReleaseNotesPain-T.txt");
     private final File aboutFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/about.txt");
     private final File helpFile = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/help.txt");
 
+    private main mainLocation;
 
-    public MenuLayout(){
+    private List<Drawing> drawList = new ArrayList<>();
 
 
+    public MenuLayout(main passM){
+
+        mainLocation = passM;
+        Drawing thisDrawing = new Drawing(passM);
         File = new Menu("File");
         Help = new Menu("Help");
 
@@ -49,6 +53,8 @@ public class MenuLayout {
         releaseNotes = new MenuItem("Release Notes");
         About = new MenuItem("About");
         HelpIt = new MenuItem("Help");
+        changeSize = new MenuItem("Change Canvas Size");
+        AddTab = new MenuItem("Add New Tab");
 
 
 
@@ -63,8 +69,10 @@ public class MenuLayout {
 
         File.getItems().add(SaveAs);
         File.getItems().add(Open);
+        File.getItems().add(changeSize);
+        File.getItems().add(AddTab);
 
-        pickAFile = new FileChooser();
+
 
         Help.getItems().add(releaseNotes);
         Help.getItems().add(About);
@@ -73,7 +81,7 @@ public class MenuLayout {
         Save.setOnAction(actionEvent -> {
             if(saveFile == null){
                 try {
-                    saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
+                    saveImageAs( pickAFile, thisDrawing.getNewProject(), homeStage, passM);
 
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
@@ -81,7 +89,7 @@ public class MenuLayout {
             }
             else{
                 try {
-                    saveImage(saveFile, Drawing.getNewProject());
+                    saveImage(saveFile, thisDrawing.getNewProject(), passM);
 
                 } catch (IOException ex) {
                     // handle exception...
@@ -94,7 +102,7 @@ public class MenuLayout {
 
         SaveAs.setOnAction(actionEvent -> {
             try {
-                saveImageAs( pickAFile, Drawing.getNewProject(), homeStage);
+                saveImageAs( pickAFile, thisDrawing.getNewProject(), homeStage, passM);
 
             } catch (IOException e) {
                 throw new RuntimeException(e);
@@ -104,7 +112,7 @@ public class MenuLayout {
         SaveAs.setAccelerator(KeyCombination.keyCombination("Ctrl + Shift + S"));
 
         Open.setOnAction(actionEvent -> {
-            openImage(saveFile, pickAFile, Drawing.getNewProject(), homeStage);
+            openImage(saveFile, pickAFile, thisDrawing.getNewProject(), homeStage);
         });
         Open.setAccelerator(KeyCombination.keyCombination("Ctrl + O" ));
 
@@ -120,6 +128,28 @@ public class MenuLayout {
             windowWithDialog(helpFile);
         });
 
+        AddTab.setOnAction(actionEvent -> {
+            addTab(mainLocation);
+        });
+
+
+        changeSize.setOnAction(actionEvent -> {
+            Stage ne = new Stage();
+            TextField width = new TextField("Width");
+            TextField height = new TextField("Height");
+            Button change = new Button("Change to this width and length");
+            TilePane tilePane = new TilePane(width, height, change);
+            Scene changeSce = new Scene(tilePane, 300, 100 );
+            ne.setScene(changeSce);
+            ne.show();
+            change.setOnAction(ActionEvent ->{
+                thisDrawing.getNewProject().setHeight(Double.parseDouble(height.getText()));
+                thisDrawing.getNewProject().setWidth(Double.parseDouble(width.getText()));
+                thisDrawing.setGc(thisDrawing.getNewProject().getGraphicsContext2D());
+                passM.resetCanvas(thisDrawing.getNewProject());
+            });
+
+        });
 
 
 
@@ -180,20 +210,21 @@ public class MenuLayout {
 
 
 
-    public void saveImageAs(FileChooser pickIt, Canvas canvas, Stage stage) throws IOException {
+    public static void saveImageAs(FileChooser pickIt, Canvas canvas, Stage stage, main mp) throws IOException {
         saveFile = pickIt.showSaveDialog(stage);
-        saveImage(saveFile, canvas);
+        saveImage(saveFile, canvas, mp);
     }
 
 
 
-    public void saveImage(File file, Canvas canvas) throws IOException {
+    public static void saveImage(File file, Canvas canvas, main mp) throws IOException {
         Image image = getRegion(canvas, canvas.getWidth(), canvas.getHeight());
 
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
+        mp.setHaveSaved(false);
     }
 
-    public Image getRegion(Canvas canvas, double width, double height){
+    public static Image getRegion(Canvas canvas, double width, double height){
 
 
         SnapshotParameters sp = new SnapshotParameters();
@@ -214,4 +245,18 @@ public class MenuLayout {
         return menuBar;
     }
 
+    public static FileChooser getPickAFile(){return pickAFile;}
+
+    public void addTab(main mp){
+        Drawing newTab = new Drawing(mp);
+        Tab createTab = new Tab();
+        mainLocation.getTabList().getTabs().add(createTab);
+        createTab.setContent(newTab.getNewProject());
+        drawList.add(newTab);
+    }
+
+    public Drawing getCurrentDraw() {
+        int stored = mainLocation.getTabList().getSelectionModel().getSelectedIndex();
+        return drawList.get(stored);
+    }
 }

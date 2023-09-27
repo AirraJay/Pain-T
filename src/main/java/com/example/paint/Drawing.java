@@ -12,54 +12,61 @@ import javafx.scene.paint.Color;
 public class Drawing {
 
 
-    private static GraphicsContext gc;
-    private static Canvas newProject;
+    private GraphicsContext gc;
+    private Canvas newProject;
 
     private double xMouse, yMouse, secondX, secondY;
 
-    private static double penWidth = 3;
+    private double penWidth = 3;
 
-    private static Object thisShape;
+    private Object thisShape;
 
     int Polysides;
 
-    public Drawing(){
+    private UI nu;
 
-        Shapes runShapes = new Shapes();
-        newProject = new Canvas(1920, 1080);
+    public Drawing(main pMain){
+
+        nu = new UI(pMain);
+
+        newProject = new Canvas(1000, 500);
         gc = newProject.getGraphicsContext2D();
-
-        Shapes loadShapes = new Shapes();
-
-
 
 
         newProject.setOnMousePressed((MouseEvent pain) ->{
             //look to see if pen is typed
             try{
-                penWidth = Double.parseDouble(UI.getWidthDou().getText());
+                penWidth = Double.parseDouble(nu.getWidthDou().getText());
             } catch (NumberFormatException e) {
                 //If someone types a string returns penWidth to default 3
                 penWidth = 3;
             }
 
-            inItDraw(gc, penWidth, UI.getColorPicker().getValue(), UI.getSpacedDashes());
+            inItDraw(gc, penWidth, nu.getColorPicker().getValue(), nu.getSpacedDashes(), nu);
 
 
             //get starting location
             xMouse = pain.getX();
             yMouse = pain.getY();
-            if(UI.getPen().isSelected()){
+            if(nu.getPen().isSelected()){
+
+                gc.beginPath();
+                gc.moveTo(xMouse, yMouse);
+                gc.stroke();
+            } else if (nu.getEraser().isSelected()) {
+                inItDraw(gc, penWidth, Color.WHITE, nu.getSpacedDashes(), nu);
                 gc.beginPath();
                 gc.moveTo(xMouse, yMouse);
                 gc.stroke();
             }
-            if(UI.getWhatShape() != null && UI.getWhatShape() != "Shapes") {
-                thisShape = UI.getWhatShape();
+            if(nu.getWhatShape() != null && nu.getWhatShape() != "Shapes") {
+                thisShape = nu.getWhatShape();
                 }
             else{
                 thisShape = null;
             }
+
+
 
 
         });
@@ -68,13 +75,16 @@ public class Drawing {
             secondX = drag.getX();
             secondY = drag.getY();
 
-            if (UI.getPen().isSelected()) {
+            if (nu.getPen().isSelected()) {
+                gc.lineTo(secondX, secondY);
+                gc.stroke();
+            } else if (nu.getEraser().isSelected()) {
                 gc.lineTo(secondX, secondY);
                 gc.stroke();
             }
 
-                try{
-                    Polysides = Integer.parseInt(UI.getPolygonSides().getText());
+            try{
+                    Polysides = Integer.parseInt(nu.getPolygonSides().getText());
                 }
                 catch(Exception e){
                     Polysides = 3;
@@ -84,40 +94,43 @@ public class Drawing {
         });
 
         newProject.setOnMouseReleased((MouseEvent dragEnd ) ->{
-            if(UI.getPen().isSelected()){
+            if(nu.getPen().isSelected()){
                 //for future use
             }
+            pMain.setHaveSaved(true);
             try {
+                //takes the combo box and then the shapes
                 switch (thisShape.toString()) {
                     case "Line": {
-                        runShapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Square": {
-                        runShapes.drawSquare(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawSquare(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Circle": {
-                        runShapes.drawCircle(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawCircle(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Rectangle": {
-                        runShapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Ellipse": {
-                        runShapes.drawEllipse(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawEllipse(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Polygon": {
-                        if (UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null) {
-                            runShapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
+                        if (nu.getPolygonSides().getText() != "Polygon Sides" && nu.getPolygonSides() != null) {
+                            Shapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
                         } else {
-                            runShapes.drawPolygon(gc, 3, xMouse, yMouse, secondX, secondY);
+                            Shapes.drawPolygon(gc, 3, xMouse, yMouse, secondX, secondY);
                         }
                         break;
                     }
                 }
+
 
 
             } catch (Exception y){
@@ -128,11 +141,11 @@ public class Drawing {
 
         newProject.setOnMouseClicked((MouseEvent click )-> {
 
-            if(UI.getColorPick().isSelected() == true){
+            if(nu.getColorPick().isSelected() == true){
                 WritableImage wi = new WritableImage((int) newProject.getWidth(), (int) newProject.getHeight());
                 newProject.snapshot(null, wi);
                 PixelReader pr = wi.getPixelReader();
-                UI.getColorPicker().setValue(pr.getColor((int) click.getX(), (int) click.getY()));
+                nu.getColorPicker().setValue(pr.getColor((int) click.getX(), (int) click.getY()));
             }
         });
 
@@ -142,25 +155,37 @@ public class Drawing {
 
     }
 
-    public static void inItDraw(GraphicsContext gc, double width, Color color, ComboBox dashes){
+    public void inItDraw(GraphicsContext gc, double width, Color color, ComboBox dashes, UI nu){
         //changes the pen's stats
 
-        double dash = Double.parseDouble(dashes.getValue().toString());
+
+        try{
+            if(nu.getPen().isSelected()) {
+                double dash = Double.parseDouble(dashes.getValue().toString());
+                gc.setLineDashes(new double[]{dash, dash * 1.3, dash, dash * 1.3});
+            }
+        }
+        catch(Exception k){
+
+        }
         gc.setStroke(color);
         gc.setLineWidth(width);
-        gc.setLineDashes(new double[] {dash, dash * 1.3,dash, dash * 1.3});
+
     }
 
 
-    public static Canvas getNewProject() {
+    public Canvas getNewProject() {
         return newProject;
     }
 
-    public static double getPenWidth(){
+    public double getPenWidth(){
         return penWidth;
     }
 
-    public static GraphicsContext getGC(){
+    public GraphicsContext getGC(){
         return gc;
+    }
+    public void setGc(GraphicsContext ngc){
+        gc = ngc;
     }
 }

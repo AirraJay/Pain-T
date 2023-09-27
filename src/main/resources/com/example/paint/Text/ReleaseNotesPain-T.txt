@@ -1,3 +1,9 @@
+Pain-T Version 0.3.0 - 09/22/2023
+Canvas size can change on request of the person
+Shapes have all been implemented including the ability to create a polygon and straight line
+Color picker has been created and works
+Dashes and width are implemented for both shapes and lines
+Canvas will ask you if you would like to save on close if you have made changes
 Pain-T Version 0.2.0 - 09/14/2023
 A fuctional pen has been created with the ability to change the color and width of said pen
 Help, about, and Release notes menu has been added

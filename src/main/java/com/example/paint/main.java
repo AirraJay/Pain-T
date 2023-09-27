@@ -4,44 +4,70 @@ import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 import java.io.File;
+import java.io.IOException;
 
 public class main extends Application{
     private static Stage myStage;
     private static BorderPane border;
+    private static Boolean haveSaved;
+
+    private static Pane newCanvas;
+
+    private TabPane tabList;
+
+    private Drawing thisDrawing;
 
 
 
     public void start(Stage stage) {
 
         //call menuLayout
-        MenuLayout thisLayout = new MenuLayout();
-        Drawing thisDrawing = new Drawing();
-        UI thisUI = new UI();
-        VBox layout = new VBox(thisLayout.getMenuBar(), thisUI.getToolBar());
+        MenuLayout thisLayout = new MenuLayout(this);
+
+        UI thisUI = new UI(this);
+
+        //TabPane
+        tabList = new TabPane();
+
+
+        VBox layout = new VBox(thisLayout.getMenuBar(), thisUI.getToolBar(), tabList);
+        haveSaved = false;
+        thisLayout.addTab(this);
+
+
+
 
         //BoarderPane
 
         border = new BorderPane();
 
-        Pane newCanvas = new Pane(Drawing.getNewProject());
-        border.setCenter(newCanvas);
+
+        resetCanvas(thisLayout.getCurrentDraw().getNewProject());
 
 
-
-        //border.setCenter(root);
         border.setTop(layout);
+
         //Setting the Scene object
 
-        Scene scene = new Scene(border, 1800, 1020);
+        Scene scene = new Scene(border, 1000, 1000);
         stage.setTitle("Displaying Image");
+
         stage.setScene(scene);
+
+        smartsave(stage, thisLayout.getCurrentDraw().getNewProject(), thisLayout, this);
+
+
 
 
         stage.show();
@@ -52,11 +78,38 @@ public class main extends Application{
         launch();
     }
 
+    //saves image on close
+    public void smartsave(Stage s, Canvas a, MenuLayout m, main Mp){
+
+        ButtonType saE = new ButtonType("Save and Exit");
+        ButtonType noSave = new ButtonType("Just exit");
+
+        Alert saveA = new Alert(null,"Do you want to save", saE, noSave);
+        if(haveSaved){
+            saveA.show();
+        }
+        s.setOnCloseRequest((WindowEvent j) -> {
+
+
+            ButtonType bt = saveA.showAndWait().get();
+            if(bt == saE){
+                try {
+                    MenuLayout.saveImageAs(m.getPickAFile(), a, s, Mp);
+                } catch (IOException e) {
+                }
+            }
+            else{
+
+            }
+            });
+
+
+    }
+
+
+
 
     public static Stage getMyStage(){return myStage;}
-
-
-
 
     public static void drawImage(File file, Canvas canvas){
         //creates the image for future use
@@ -73,6 +126,21 @@ public class main extends Application{
         canvas.setHeight(img.getHeight());
         gc.drawImage(img, 0, 0);
         //displays
-        border.setCenter(canvas);
+        //border.setCenter(canvas);
+    }
+
+    public void setHaveSaved(Boolean haveSaved) {
+        main.haveSaved = haveSaved;
+
+    }
+    //resets canvas' width and height
+    public void resetCanvas(Canvas a){
+        newCanvas = new Pane(a);
+        border.setCenter(newCanvas);
+
+    }
+
+    public TabPane getTabList() {
+        return tabList;
     }
 }
