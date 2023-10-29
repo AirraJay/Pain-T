@@ -406,7 +406,7 @@ public class MenuLayout {
 
         if(fileType.equals(".jpg") || fileType.equals(".bmp")){
             dataLossNotis(fileType);
-            System.out.println(fileType);
+
         }
 
         saveImage(saveFile, canvas, mp);

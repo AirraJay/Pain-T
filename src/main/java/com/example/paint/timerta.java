@@ -27,7 +27,7 @@ public class timerta extends TimerTask {
                 }
             });
 
-            System.out.println(time);
+
 
             if(time == 0){
                 Platform.runLater(() -> {
