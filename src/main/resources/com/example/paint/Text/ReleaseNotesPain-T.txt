@@ -1,3 +1,10 @@
+Pain-T Version 0.4.0 - 9/29/2023
+Undo Redo buttons added
+Multiple Tabs are now available
+Select, copy, and move can all be used
+Text may now be added
+Erasers, N-polygons, and curved rectangles are now available
+Clearing the canvas is also a button instead of a new canvas
 Pain-T Version 0.3.0 - 09/22/2023
 Canvas size can change on request of the person
 Shapes have all been implemented including the ability to create a polygon and straight line
