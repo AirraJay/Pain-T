@@ -4,25 +4,28 @@ import javafx.scene.control.*;
 import javafx.scene.paint.Color;
 
 public class UI {
-    private static ToggleButton pen,colorPick, eraser;
+    private static ToggleButton pen,colorPick, eraser, tex;
     private static ComboBox shapes, dashedLines;
 
     private static ToolBar toolBar;
 
-    private static TextField widthDou, polygonSides;
+    private static TextField widthDou, polygonSides, text;
 
     private static ColorPicker colorPicker;
     private static Object whatShape, whatbreak;
+    private static Label displayTime;
 
     private static double spacedDashes;
 
     public UI(main mp){
 
         pen = new ToggleButton("Pen");
+        tex = new ToggleButton("Text");
         colorPick = new ToggleButton("Color Picker");
         eraser = new ToggleButton("Eraser");
         toolBar = new ToolBar();
         shapes = new ComboBox<>();
+        displayTime = new Label();
         whatShape = "Pen";
         pen.setSelected(true);
         shapes.getItems().addAll(
@@ -34,6 +37,7 @@ public class UI {
                 "Round Rectangle",
                 "Polygon"
         );
+        text = new TextField("Write Text Here to print");
 
 
         dashedLines = new ComboBox<>();
@@ -65,6 +69,7 @@ public class UI {
             pen.setSelected(false);
             colorPick.setSelected(false);
             eraser.setSelected(false);
+            MenuLayout.setSelected(false);
         });
 
         shapes.setValue("Square");
@@ -75,6 +80,7 @@ public class UI {
             whatShape = null;
            colorPick.setSelected(false);
             eraser.setSelected(false);
+            MenuLayout.setSelected(false);
         });
 
 
@@ -84,6 +90,7 @@ public class UI {
             whatShape = null;
             colorPick.setSelected(true);
             eraser.setSelected(false);
+            MenuLayout.setSelected(false);
         });
 
         eraser.setOnAction(ActionEvent -> {
@@ -92,12 +99,15 @@ public class UI {
             whatShape = null;
             colorPick.setSelected(false);
             eraser.setSelected(true);
+            MenuLayout.setSelected(false);
         });
 
 
         toolBar.getItems().add(colorPick);
         toolBar.getItems().add(pen);
         toolBar.getItems().add(eraser);
+        toolBar.getItems().add(tex);
+        toolBar.getItems().add(text);
 
 
         shapes.setValue("Shapes");
@@ -117,41 +127,58 @@ public class UI {
 
 
         double widthChange;
-
+        displayTime.setText("Timer Off");
         toolBar.getItems().add(widthDou);
         toolBar.getItems().add(colorPicker);
+        toolBar.getItems().add(displayTime);
 
 
     }
 
     //Accessors
-    public ToggleButton getPen() {
+    public static ToggleButton getPen() {
         return pen;
     }
-    public ToggleButton getColorPick() {
+    public static ToggleButton getColorPick() {
         return colorPick;
+    }
+
+    public static Label getDisplayTime() {
+        return displayTime;
     }
 
     public ToolBar getToolBar(){
         return toolBar;
     }
 
-    public TextField getWidthDou(){
+    public static TextField getWidthDou(){
         return widthDou;
     }
-    public ColorPicker getColorPicker(){
+    public static ColorPicker getColorPicker(){
         return colorPicker;
     }
-    public Object getWhatShape(){return whatShape;}
+    public static Object getWhatShape(){return whatShape;}
 
-    public TextField getPolygonSides() {
+    public static TextField getPolygonSides() {
         return polygonSides;
     }
 
-    public ComboBox getSpacedDashes() {
+    public static ComboBox getSpacedDashes() {
         return dashedLines;
     }
-    public ToggleButton getEraser(){
+    public static ToggleButton getEraser(){
         return eraser;
+    }
+    public static ToggleButton getTex(){
+        return tex;
+    }
+
+    public static TextField getText() {
+        return text;
+    }
+
+
+    public static void setWhatShape(Object a){
+        whatShape = a;
     }
 }

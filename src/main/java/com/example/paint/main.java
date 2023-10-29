@@ -5,6 +5,7 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonBar;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.TabPane;
 import javafx.scene.image.Image;
@@ -26,19 +27,18 @@ public class main extends Application{
 
     private TabPane tabList;
 
-    private Drawing thisDrawing;
 
 
+    public void start(Stage stage) throws IOException {
 
-    public void start(Stage stage) {
-
+        tabList = new TabPane();
         //call menuLayout
         MenuLayout thisLayout = new MenuLayout(this);
 
         UI thisUI = new UI(this);
 
         //TabPane
-        tabList = new TabPane();
+
 
 
         VBox layout = new VBox(thisLayout.getMenuBar(), thisUI.getToolBar(), tabList);
@@ -60,11 +60,10 @@ public class main extends Application{
 
         //Setting the Scene object
 
-        Scene scene = new Scene(border, 1000, 1000);
+        Scene scene = new Scene(border, 1600, 800);
         stage.setTitle("Displaying Image");
 
         stage.setScene(scene);
-
         smartsave(stage, thisLayout.getCurrentDraw().getNewProject(), thisLayout, this);
 
 
@@ -73,8 +72,6 @@ public class main extends Application{
         stage.show();
     }
     public static void main(String[] args) {
-
-
         launch();
     }
 
@@ -83,8 +80,9 @@ public class main extends Application{
 
         ButtonType saE = new ButtonType("Save and Exit");
         ButtonType noSave = new ButtonType("Just exit");
+        ButtonType takeMeBack = new ButtonType("Take me Back", ButtonBar.ButtonData.CANCEL_CLOSE);
 
-        Alert saveA = new Alert(null,"Do you want to save", saE, noSave);
+        Alert saveA = new Alert(null,"Do you want to save", saE, takeMeBack, noSave);
         if(haveSaved){
             saveA.show();
         }

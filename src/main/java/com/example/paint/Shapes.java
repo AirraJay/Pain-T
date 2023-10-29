@@ -2,7 +2,6 @@ package com.example.paint;
 
 
 import javafx.scene.canvas.GraphicsContext;
-import java.lang.Math;
 
 public abstract class Shapes {
 
@@ -88,7 +87,7 @@ public abstract class Shapes {
 
     }
 
-    public void drawRoundRectangle(GraphicsContext gc, double x, double y, double secondX, double secondY){
+    public static void drawRoundRectangle(GraphicsContext gc, double x, double y, double secondX, double secondY){
         double height = Math.abs(secondY - y);
         double length = Math.abs(secondX - x);
 
@@ -111,6 +110,7 @@ public abstract class Shapes {
             gc.strokeRoundRect(secondX, y, length, height, 25, 25);
 
         }
+
 
     }
 

@@ -4,6 +4,7 @@ module com.example.paint {
     requires javafx.web;
     requires java.desktop;
     requires javafx.swing;
+    requires org.testng;
 
 
     opens com.example.paint to javafx.fxml;
