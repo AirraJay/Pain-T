@@ -39,36 +39,23 @@ public class main extends Application{
 
         //TabPane
 
-
-
         VBox layout = new VBox(thisLayout.getMenuBar(), thisUI.getToolBar(), tabList);
         haveSaved = false;
         thisLayout.addTab(this);
 
-
-
-
         //BoarderPane
 
         border = new BorderPane();
-
-
         resetCanvas(thisLayout.getCurrentDraw().getNewProject());
-
-
         border.setTop(layout);
 
         //Setting the Scene object
 
         Scene scene = new Scene(border, 1600, 800);
         stage.setTitle("Displaying Image");
-
         stage.setScene(scene);
+        stage.setMaximized(true);
         smartsave(stage, thisLayout.getCurrentDraw().getNewProject(), thisLayout, this);
-
-
-
-
         stage.show();
     }
     public static void main(String[] args) {
@@ -133,7 +120,9 @@ public class main extends Application{
     }
     //resets canvas' width and height
     public void resetCanvas(Canvas a){
+
         newCanvas = new Pane(a);
+        newCanvas.setStyle("-fx-background-color: GRAY;");
         border.setCenter(newCanvas);
 
     }
@@ -141,4 +130,5 @@ public class main extends Application{
     public TabPane getTabList() {
         return tabList;
     }
+    public Pane getNewCanvas(){return newCanvas;}
 }

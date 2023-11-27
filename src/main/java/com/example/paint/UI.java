@@ -1,11 +1,20 @@
 package com.example.paint;
 
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
+
+import java.io.File;
 
 public class UI {
     private static ToggleButton pen,colorPick, eraser, tex;
     private static ComboBox shapes, dashedLines;
+    private static File texIm = new File("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Images/a_uppercasebw_p.png");
+    private static File penIm = new File("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Images/pen.png");
+    private static File eraserIm = new File("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Images/eraser.png");
+    private static File colorPickIm = new File("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Images/color_picker.png");
+
 
     private static ToolBar toolBar;
 
@@ -15,16 +24,30 @@ public class UI {
     private static Object whatShape, whatbreak;
     private static Label displayTime;
 
-    private static double spacedDashes;
+
 
     public UI(main mp){
 
-        pen = new ToggleButton("Pen");
-        tex = new ToggleButton("Text");
-        colorPick = new ToggleButton("Color Picker");
-        eraser = new ToggleButton("Eraser");
+        pen = new ToggleButton();
+        pen.setGraphic(scale(penIm));
+        Tooltip penTip = new Tooltip("Free Draw");
+        Tooltip.install(pen, penTip);
+        tex = new ToggleButton();
+        tex.setGraphic(scale(texIm));
+        Tooltip textTip = new Tooltip("Place Text");
+        Tooltip.install(tex, textTip);
+        colorPick = new ToggleButton();
+        colorPick.setGraphic(scale(colorPickIm));
+        Tooltip colorTip = new Tooltip("Grab a color from the canvas");
+        Tooltip.install(colorPick, colorTip);
+        eraser = new ToggleButton();
+        eraser.setGraphic(scale(eraserIm));
+        Tooltip eraserTip = new Tooltip("Removes color and returns to white");
+        Tooltip.install(eraser, eraserTip);
         toolBar = new ToolBar();
         shapes = new ComboBox<>();
+        Tooltip shapeTip = new Tooltip("Change your shape");
+        Tooltip.install(shapes, shapeTip);
         displayTime = new Label();
         whatShape = "Pen";
         pen.setSelected(true);
@@ -42,15 +65,11 @@ public class UI {
 
         dashedLines = new ComboBox<>();
         dashedLines.getItems().addAll(0d, 1d, 3d, 5d, 10d, 20d);
-        dashedLines.setOnAction(ActionEvent -> {
-            whatbreak = dashedLines.getValue();
-            if(whatbreak != "No Dashes"){
-                spacedDashes = 0;
-            }
-            else{
-                spacedDashes = Double.parseDouble(whatbreak.toString());
-            }
-                });
+
+        Tooltip dashedTip = new Tooltip("Change the difference between dashes");
+        Tooltip.install(dashedLines, dashedTip);
+
+
 
         Label x = new Label("Width of Canvas");
         Label y = new Label("Height of Canvas");
@@ -133,6 +152,11 @@ public class UI {
         toolBar.getItems().add(displayTime);
 
 
+    }
+    public ImageView scale(File p){
+        Image i = new Image(p.toURI().toString(), 25, 25,false, false);
+        ImageView iv = new ImageView(i);
+        return  iv;
     }
 
     //Accessors

@@ -1,5 +1,5 @@
 package com.example.paint;
-
+import javafx.embed.swing.SwingFXUtils;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.ComboBox;
@@ -8,54 +8,47 @@ import javafx.scene.image.PixelReader;
 import javafx.scene.image.WritableImage;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
+import javafx.scene.transform.Scale;
 
+import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Stack;
-
 import static java.lang.Double.parseDouble;
 import static java.lang.Math.abs;
-
+import static javafx.scene.paint.Color.WHITE;
 /**
 * Drawing is where all canvases and Drawing tools are set to be used
  */
-
-
 public class Drawing {
-
     private GraphicsContext gc;
     private Canvas newProject;
-
     private double xMouse, yMouse, secondX, secondY;
-
     private double penWidth = 3;
-
     private Object thisShape;
-
     int Polysides;
     public Stack<Image> undos, redos;
-
     public Image Copied;
-    public Image selected;
-
+    public Image selected, storedImage;
     public double widthOrig, dashOriginal;
     public Color colorOrig;
-
-
-
+    public Scale scale;
+    public double zoom;
     public Drawing(){
-
-        newProject = new Canvas(1600, 800);
+        newProject = new Canvas(1280, 720);
         gc = newProject.getGraphicsContext2D();
-        main pMain = new main();
-
-
+        gc.setFill(WHITE);
+        zoom = 1;
         undos = new Stack<>();
         redos = new Stack<>();
+        addUndos(undos,redos,newProject);
+
         //addUndos(undos, redos, newProject);
 
         newProject.setOnMouseMoved((MouseEvent moved) -> {
             xMouse = moved.getX();
             yMouse = moved.getY();
         });
+
 
         newProject.setOnMousePressed((MouseEvent pain) ->{
             //look to see if pen is typed
@@ -78,11 +71,13 @@ public class Drawing {
                 gc.beginPath();
                 gc.moveTo(xMouse, yMouse);
                 gc.stroke();
+                addUndos(undos, redos, newProject);
             } else if (UI.getEraser().isSelected()) {
-                inItDraw(gc, penWidth, Color.WHITE, UI.getSpacedDashes());
+                inItDraw(gc, penWidth, WHITE, UI.getSpacedDashes());
                 gc.beginPath();
                 gc.moveTo(xMouse, yMouse);
                 gc.stroke();
+                addUndos(undos, redos, newProject);
             }
             if(UI.getWhatShape() != null && UI.getWhatShape() != "Shapes") {
                 thisShape = UI.getWhatShape();
@@ -102,19 +97,26 @@ public class Drawing {
             if (UI.getPen().isSelected()) {
                 gc.lineTo(secondX, secondY);
                 gc.stroke();
+
             } else if (UI.getEraser().isSelected()) {
                 gc.lineTo(secondX, secondY);
                 gc.stroke();
 
             }
             else if(UI.getWhatShape() != null && UI.getWhatShape() != "Shapes"){
-                Image storedImage = undos.peek();
+
+                storedImage = undos.peek();
                 gc.drawImage(storedImage, 0, 0);
             } else if (MenuLayout.isMove) {
                 gc.clearRect(xMouse, yMouse, abs(xMouse - secondX), abs(yMouse - secondY));
-                Image storedImage = undos.peek();
+                storedImage = undos.peek();
                 gc.drawImage(storedImage, 0, 0);
                 gc.drawImage(selected, 0, 0, secondX + selected.getWidth(), secondY + selected.getHeight());
+                try {
+                    MenuLayout.threading("Move");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
 
             }
 
@@ -125,56 +127,81 @@ public class Drawing {
                 Polysides = 3;
             }
             try{
+
                 switch (thisShape.toString()) {
                     case "Line": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
-
                         break;
                     }
                     case "Square": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawSquare(gc, xMouse, yMouse, secondX, secondY);
-
+                        try {
+                            MenuLayout.threading("Square");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         break;
                     }
                     case "Circle": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawCircle(gc, xMouse, yMouse, secondX, secondY);
-
+                        try {
+                            MenuLayout.threading("Circle");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         break;
                     }
                     case "Rectangle": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
+                        try {
+                            MenuLayout.threading("Rectangle");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         break;
                     }
                     case "Ellipse": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawEllipse(gc, xMouse, yMouse, secondX, secondY);
-
+                        try {
+                            MenuLayout.threading("Ellipse");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         break;
                     }
                     case "Polygon": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         if (UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null) {
                             Shapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
                         } else {
                             Shapes.drawPolygon(gc, 3, xMouse, yMouse, secondX, secondY);
                         }
+                        try {
+                            MenuLayout.threading("Polygon");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
+                        }
                         break;
                     }
                     case "Round Rectangle": {
-                        Image storedImage = undos.peek();
+                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
-                        if (UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null){
-                            Shapes.drawRoundRectangle(gc, xMouse, yMouse, secondX, secondY);
+                        Shapes.drawRoundRectangle(gc, xMouse, yMouse, secondX, secondY);
+                        try {
+                            MenuLayout.threading("Round Rectangle");
+                        } catch (IOException e) {
+                            throw new RuntimeException(e);
                         }
                     }
                 }
@@ -183,38 +210,11 @@ public class Drawing {
 
             }
             if(MenuLayout.isSelected){
-                Image storedImage = undos.peek();
+                storedImage = undos.peek();
                 gc.drawImage(storedImage, 0, 0);
                 Shapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
-
             }
-
-
-
         });
-
-        newProject.setOnMouseReleased((MouseEvent dragEnd ) ->{
-            if(UI.getPen().isSelected()){
-                //for future use
-            }
-            pMain.setHaveSaved(true);
-            try {
-                //takes the combo box and then the shapes
-
-
-
-
-
-            } catch (Exception y){
-
-            }
-            addUndos(undos, redos, newProject);
-            if (MenuLayout.isSelected) {
-
-
-            }
-
-            });
 
 
         newProject.setOnMouseClicked((MouseEvent click )-> {
@@ -224,22 +224,69 @@ public class Drawing {
                 newProject.snapshot(null, wi);
                 PixelReader pr = wi.getPixelReader();
                 UI.getColorPicker().setValue(pr.getColor((int) click.getX(), (int) click.getY()));
+                try {
+                    MenuLayout.threading("Color Picker");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else if (UI.getTex().isSelected() == true) {
                 gc.strokeText(UI.getText().getText(), xMouse, yMouse);
-
+                addUndos(undos, redos, newProject);
+                try {
+                    MenuLayout.threading("Text");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             } else if (MenuLayout.isPaste) {
                 gc.drawImage(Copied,  click.getX(), click.getY(), click.getX() + getCopied().getWidth(), click.getY() + Copied.getHeight());
-
+                addUndos(undos, redos, newProject);
+                try {
+                    MenuLayout.threading("Paste");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
+        newProject.setOnMouseReleased((MouseEvent released) -> {
+            double releasedX = released.getX();
+            double releasedY = released.getY();
+            if(UI.getPen().isSelected()){
+                addUndos(undos, redos, newProject);
+                try {
+                    MenuLayout.threading("Pen");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else if (UI.getEraser().isSelected()) {
+                addUndos(undos, redos, newProject);
+                try {
+                    MenuLayout.threading("Eraser");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+            else if(MenuLayout.isSelected){
+                undo();
+                int x = (int)abs(xMouse - releasedX);
+                int y = (int)abs(yMouse - releasedY);
 
+                int x1 = (int) xMouse;
+                int y1 = (int) yMouse;
 
+                Image snap = newProject.snapshot(null, null);
+                BufferedImage newBuff = SwingFXUtils.fromFXImage(snap, null);
+                BufferedImage next = new BufferedImage(x, y, BufferedImage.OPAQUE);
+                next.createGraphics().drawImage(newBuff.getSubimage(x1, y1, x, y), 0, 0, null);
 
-
-
+                selected = SwingFXUtils.toFXImage(next, null);
+                try {
+                    MenuLayout.threading("Selection");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        });
     }
-
-
     /**
      * inItDraw sets the selected options for the pen and more
      * @param gc gc is only used to make sure the line dashes are set up
@@ -249,28 +296,35 @@ public class Drawing {
      */
     public void inItDraw(GraphicsContext gc, double width, Color color, ComboBox dashes){
 
-        if(MenuLayout.isSelected){
-            widthOrig = width;
-            colorOrig = color;
-            dashOriginal = Double.parseDouble(dashes.getValue().toString());
-        }
+
+        widthOrig = width;
+        colorOrig = color;
+
+
         //changes the pen's stats
         double dash;
-        if(!MenuLayout.isSelected){
-            dashes.setValue(dashOriginal);
+        if(UI.getTex().isSelected()){
+            widthOrig = width;
+            //One is required to type text without issues
+            width = 1;
         }
 
         try{
-            if(UI.getPen().isSelected()) {
-                dash = parseDouble(dashes.getValue().toString());
-                gc.setLineDashes(new double[]{dash, dash * 1.3, dash, dash * 1.3});
-            }
+            dash = parseDouble(dashes.getValue().toString());
+            gc.setLineDashes(new double[]{dash, dash * 1.3, dash, dash * 1.3});
         }
         catch(Exception k){
 
         }
-        gc.setStroke(color);
-        gc.setLineWidth(width);
+        if(!UI.getTex().isSelected()){
+            gc.setStroke(colorOrig);
+            gc.setLineWidth(widthOrig);
+        }
+        else{
+            gc.setStroke(color);
+            gc.setLineWidth(width);
+        }
+
 
     }
 
@@ -309,15 +363,12 @@ public class Drawing {
 
     }
 
-
     public Canvas getNewProject() {
         return newProject;
     }
-
     public double getPenWidth(){
         return penWidth;
     }
-
     public GraphicsContext getGC(){
         return gc;
     }
@@ -328,34 +379,24 @@ public class Drawing {
         newProject = a;
     }
     public void setCopied(Image a){
-        //System.out.println(Copied.toString());
         Copied = a;
-
-        System.out.println(Copied.toString());
-
     }
-
     public void setSelected(Image selected) {this.selected = selected;
     }
-
     public Image getCopied(){
         return Copied;
     }
-
     public double getxMouse() {
         return xMouse;
     }
-
     public double getyMouse() {
         return yMouse;
     }
-
     public double getSecondX() {
         return secondX;
     }
-
     public double getSecondY() {
         return secondY;
     }
-
+    public Image getSelected(){return selected;}
 }

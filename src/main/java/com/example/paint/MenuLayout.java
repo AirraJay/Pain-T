@@ -17,9 +17,14 @@ import javafx.stage.Stage;
 import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.*;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Timer;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import static java.lang.Math.abs;
 
@@ -27,10 +32,11 @@ import static java.lang.Math.abs;
 public class MenuLayout {
 
     final MenuItem Save, SaveAs, Open,releaseNotes, About, HelpIt, changeSize, AddTab, clearCanvas, redo, undo, copy, paste, select,
-            move, autoSave, hideTimer;
+            move, autoSave, hideTimer, rotateRight, rotateLeft, rotateRight180, rotateLeft180, rotateRight270, rotateLeft270, mirrorYAxis,
+            mirrorXAxis, clearSelect;
     private final MenuBar menuBar;
 
-    final  Menu File , Edit , Help ;
+    final  Menu File , Edit , Help, rotateCan ;
 
     private static final FileChooser pickAFile = new FileChooser();
     int currentTab;
@@ -50,18 +56,21 @@ public class MenuLayout {
 
 
     public Image ka;
-    private File autoLoc = new File("/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/help.txt");
 
     Timer autoSaveTime;
-
-
+    public static Logger log;
+    String useTools = "Used tools";
+    public static FileHandler fh;
     public MenuLayout(main passM) throws IOException {
+        fh= new FileHandler("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/logging.log");;
+        log = Logger.getLogger(useTools);
 
         mainLocation = passM;
         //Drawing thisDrawing = new Drawing(passM);
         File = new Menu("File");
         Help = new Menu("Help");
         Edit = new Menu("Edit");
+        rotateCan = new Menu("Rotate Canvas");
 
         //DisplayTimer
 
@@ -79,9 +88,18 @@ public class MenuLayout {
         tab = 0;
 
         select = new MenuItem("Select");
+        clearSelect = new MenuItem("Select");
         copy = new MenuItem("Copy");
         paste = new MenuItem("Paste");
         move = new MenuItem("Move");
+        rotateRight = new MenuItem("Rotate Right 90 Degrees");
+        rotateLeft = new MenuItem("Rotate Left 90 Degrees");
+        rotateRight180 = new MenuItem("Rotate Right 180 Degrees");
+        rotateLeft180 = new MenuItem("Rotate Left 180 Degrees");
+        rotateRight270 = new MenuItem("Rotate Right 270 Degrees");
+        rotateLeft270 = new MenuItem("Rotate Left 270 Degrees");
+        mirrorYAxis = new MenuItem("Flip Horizontally");
+        mirrorXAxis = new MenuItem("Flip Vertically");
 
         redo = new MenuItem("Redo");
         undo = new MenuItem("Undo");
@@ -93,33 +111,16 @@ public class MenuLayout {
 
         homeStage = main.getMyStage();
         //Creates menu Bar
-        menuBar.getMenus().add(File);
-        menuBar.getMenus().add(Edit);
-        menuBar.getMenus().add(Help);
-
+        menuBar.getMenus().addAll(File, Edit, Help);
 
         //Adds items to File
-        File.getItems().add(Save);
+        File.getItems().addAll(Save, SaveAs, Open, changeSize, AddTab, clearCanvas, autoSave, undo, redo);
 
-        File.getItems().add(SaveAs);
-        File.getItems().add(Open);
-        File.getItems().add(changeSize);
-        File.getItems().add(AddTab);
-        File.getItems().add(clearCanvas);
-        File.getItems().add(autoSave);
-        Edit.getItems().add(undo);
-        Edit.getItems().add(redo);
+        Edit.getItems().addAll(select, copy, paste, move, rotateCan);
+        rotateCan.getItems().addAll(rotateRight, rotateLeft, rotateRight180, rotateLeft180, rotateRight270, rotateLeft270, mirrorYAxis, mirrorXAxis);
 
-        Edit.getItems().add(select);
-        Edit.getItems().add(copy);
-        Edit.getItems().add(paste);
-        Edit.getItems().add(move);
 
-        Help.getItems().add(releaseNotes);
-        Help.getItems().add(About);
-        Help.getItems().add(HelpIt);
-        Help.getItems().add(hideTimer);
-
+        Help.getItems().addAll(releaseNotes, About, HelpIt, hideTimer);
         currentTab = passM.getTabList().getSelectionModel().getSelectedIndex();
 
         autoSaveTime = new Timer();
@@ -147,10 +148,7 @@ public class MenuLayout {
             }
 
 
-        });
-        Save.setAccelerator(KeyCombination.keyCombination("Ctrl + S" ));
-
-
+        });Save.setAccelerator(KeyCombination.keyCombination("Ctrl + S" ));
         SaveAs.setOnAction(actionEvent -> {
             try {
                 saveImageAs( pickAFile, drawList.get(currentTab).getNewProject(), homeStage, passM);
@@ -158,43 +156,17 @@ public class MenuLayout {
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
-        });
-
-        SaveAs.setAccelerator(KeyCombination.keyCombination("Ctrl + Shift + S"));
-
+        });SaveAs.setAccelerator(KeyCombination.keyCombination("Ctrl + Shift + S"));
         Open.setOnAction(actionEvent -> {
             addTab((passM));
-            openImage(saveFile, pickAFile, drawList.get(currentTab).getNewProject(), homeStage);
-        });
+            openImage(saveFile, pickAFile, drawList.get(currentTab).getNewProject(), homeStage);});
         Open.setAccelerator(KeyCombination.keyCombination("Ctrl + O" ));
-
-        undo.setOnAction(actionEvent -> {
-            getCurrentDraw().undo();
-        });
-        undo.setAccelerator(KeyCombination.keyCombination("Ctrl + Z"));
-
-
-        redo.setOnAction(actionEvent -> {
-            getCurrentDraw().redo();
-        });
-        redo.setAccelerator(KeyCombination.keyCombination("Ctrl + Y"));
-
-        releaseNotes.setOnAction(actionEvent -> {
-            windowWithDialog(releaseNotesFile);
-        });
-
-        About.setOnAction(actionEvent -> {
-            windowWithDialog(aboutFile);
-        });
-
-        HelpIt.setOnAction(actionEvent -> {
-            windowWithDialog(helpFile);
-        });
-
-        AddTab.setOnAction(actionEvent -> {
-            addTab(mainLocation);
-        });
-
+        undo.setOnAction(actionEvent -> {getCurrentDraw().undo();});undo.setAccelerator(KeyCombination.keyCombination("Ctrl + Z"));
+        redo.setOnAction(actionEvent -> {getCurrentDraw().redo();});redo.setAccelerator(KeyCombination.keyCombination("Ctrl + Y"));
+        releaseNotes.setOnAction(actionEvent -> {windowWithDialog(releaseNotesFile);});
+        About.setOnAction(actionEvent -> {windowWithDialog(aboutFile);});
+        HelpIt.setOnAction(actionEvent -> {windowWithDialog(helpFile);});
+        AddTab.setOnAction(actionEvent -> {addTab(mainLocation);});
         clearCanvas.setOnAction(actionEvent -> {
             ButtonType no = new ButtonType("Exit", ButtonBar.ButtonData.CANCEL_CLOSE);
             ButtonType yes = new ButtonType("Yes clear it");
@@ -219,23 +191,12 @@ public class MenuLayout {
 
 
         });
+        clearSelect.setOnAction(actionEvent -> {
+            getCurrentDraw().setSelected(null);
+        });
         copy.setOnAction(actionEvent -> {
             reset();
-            getCurrentDraw().undo();
-            getCurrentDraw().undo();
-            int x = (int)abs(getCurrentDraw().getxMouse() - getCurrentDraw().getSecondX());
-            int y = (int)abs(getCurrentDraw().getyMouse() - getCurrentDraw().getSecondY());
-
-            int x1 = (int) getCurrentDraw().getxMouse();
-            int y1 = (int) getCurrentDraw().getyMouse();
-
-            Image snap = getCurrentDraw().getNewProject().snapshot(null, null);
-            BufferedImage newBuff = SwingFXUtils.fromFXImage(snap, null);
-            BufferedImage next = new BufferedImage(x, y, BufferedImage.OPAQUE);
-            next.createGraphics().drawImage(newBuff.getSubimage(x1, y1, x, y), 0, 0, null);
-
-            ka = SwingFXUtils.toFXImage(next, null);
-            getCurrentDraw().setCopied(ka);
+            getCurrentDraw().setCopied(getCurrentDraw().getSelected());
 
         });
         paste.setOnAction(actionEvent -> {
@@ -326,16 +287,34 @@ public class MenuLayout {
 
         });
 
-
-
-
-
+        rotateRight.setOnAction(actionEvent -> {
+            rotate(90);
+        });
+        rotateLeft.setOnAction(actionEvent -> {
+            rotate(-90);
+        });
+        rotateRight180.setOnAction(actionEvent -> {
+            rotate(180);
+        });
+        rotateLeft180.setOnAction(actionEvent -> {
+            rotate(-180);
+        });
+        rotateRight270.setOnAction(actionEvent -> {
+            rotate(270);
+        });
+        rotateLeft270.setOnAction(actionEvent -> {
+            rotate(-270);
+        });
+        mirrorYAxis.setOnAction((actionEvent -> {
+            getCurrentDraw().getNewProject().setScaleX(getCurrentDraw().getNewProject().getScaleX() * -1);
+        }));
+        mirrorXAxis.setOnAction((actionEvent -> {
+            getCurrentDraw().getNewProject().setScaleY(getCurrentDraw().getNewProject().getScaleY() * -1);
+        }));
     }
 
     public void windowWithDialog(File f){
         Stage DialogStage = new Stage();
-
-
         TextArea ta = new TextArea();
         Scene scene = new Scene(ta);
 
@@ -371,10 +350,8 @@ public class MenuLayout {
         boolean j = true;
         int i;
         // Holds true till there is nothing to read
-        while (j)
-
+        while (j){
         // Print all the content of a file
-        {
             try {
                 if (((i = fr.read()) == -1)) j = false;
             } catch (IOException e) {
@@ -383,18 +360,27 @@ public class MenuLayout {
             System.out.print((char) i);
         }
     }
-
     public void runSave() throws IOException {
         FileChooser pickIt = new FileChooser();
         Canvas project = getCurrentDraw().getNewProject();
         Stage stage = homeStage;
         main mp = mainLocation;
         saveImageAs(pickIt, project, stage, mp);
-
     }
+    public void rotate(int howMuch){
+        if(getCurrentDraw().getSelected() != null){
+            Canvas layer2 = new Canvas(getCurrentDraw().getNewProject().getWidth(), getCurrentDraw().getNewProject().getHeight());
+            mainLocation.getNewCanvas().getChildren().add(layer2);
+            layer2.toFront();
+            layer2.getGraphicsContext2D().drawImage(getCurrentDraw().getSelected(), getCurrentDraw().getxMouse(), getCurrentDraw().getyMouse());
+            getCurrentDraw().getGC().clearRect(getCurrentDraw().getxMouse(), getCurrentDraw().getyMouse(), getCurrentDraw().getNewProject().getWidth(), getCurrentDraw().getNewProject().getHeight());
+            layer2.setRotate(howMuch);
 
-
-
+        }
+        else{
+            getCurrentDraw().getNewProject().setRotate(getCurrentDraw().getNewProject().getRotate() + howMuch);
+        }
+     }
     public static void saveImageAs(FileChooser pickIt, Canvas canvas, Stage stage, main mp) throws IOException {
         pickIt.setInitialFileName("Document");
         pickIt.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.jpg"));
@@ -406,38 +392,27 @@ public class MenuLayout {
 
         if(fileType.equals(".jpg") || fileType.equals(".bmp")){
             dataLossNotis(fileType);
-
         }
-
         saveImage(saveFile, canvas, mp);
     }
-
+    //reports on lost data after save
     public static void dataLossNotis(String type){
         ButtonType takeMeBack = new ButtonType("Acknowledge", ButtonBar.ButtonData.CANCEL_CLOSE);
-        Alert data = new Alert(null,"Warning if you save now you may lose some data", takeMeBack);
+        Alert data = new Alert(null,"Warning that save may have lost some data", takeMeBack);
         data.show();
     }
-
-
     public static void saveImage(File file, Canvas canvas, main mp) throws IOException {
         Image image = getRegion(canvas, canvas.getWidth(), canvas.getHeight());
-
-
         ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
         mp.setHaveSaved(false);
     }
-
     public static Image getRegion(Canvas canvas, double width, double height){
-
-
         SnapshotParameters sp = new SnapshotParameters();
         //writes image
         WritableImage writtenImage = new WritableImage((int)width, (int)height);
-
         canvas.snapshot(sp, writtenImage);
         return writtenImage;
     }
-
     public void openImage(File file, FileChooser fc, Canvas canvas, Stage stage){
         if(file == null)
             file = fc.showOpenDialog(stage);
@@ -452,11 +427,6 @@ public class MenuLayout {
         isSelected = false;
         isPaste = false;
     }
-
-
-    public static FileChooser getPickAFile(){return pickAFile;}
-
-
     public void addTab(main mp){
         tab++;
 
@@ -468,21 +438,34 @@ public class MenuLayout {
         drawList.add(newTab);
 
         currentTab = mp.getTabList().getSelectionModel().getSelectedIndex();
+    }
+    public static void threading(String currentTool) throws IOException {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
+        Date date = new Date(System.currentTimeMillis());
+        dateFormat.format(date);
 
+        try{
+            fh = new FileHandler("C:/Users/alkra/IdeaProjects/PAIN-T/src/main/resources/com/example/paint/Text/logging.log");
+            log.addHandler(fh);
+            SimpleFormatter format = new SimpleFormatter();
+            fh.setFormatter(format);
+            log.info("(" + date + ") | Active Tool: " + currentTool + "\t\t\t");
+        }
+        catch (Exception e){
+
+        }
 
 
     }
 
+    public static FileChooser getPickAFile(){return pickAFile;}
     public Drawing getCurrentDraw() {
         int stored = mainLocation.getTabList().getSelectionModel().getSelectedIndex();
         return drawList.get(stored);
     }
-
     public static void setSelected(Boolean f) {
         isSelected = f;
     }
-
-
     public MenuBar getMenuBar() {
         return menuBar;
     }
