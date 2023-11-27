@@ -1,3 +1,12 @@
+https://github.com/Airralin/Pain-TPain-T Version 0.6.0 - 11/27/2023
+Rotate item
+Rotate canvas
+Icons added 
+Logging
+Pain-T Version 0.5.0 - 11/12/2023
+Auto Save added
+Unit tests added
+Java Doc added
 Pain-T Version 0.4.0 - 9/29/2023
 Undo Redo buttons added
 Multiple Tabs are now available
