@@ -19,7 +19,7 @@ public class timerta extends TimerTask {
 
     @Override
     public void run() {
-
+        //if the tray is supported creates notifications through the os
         Image image = Toolkit.getDefaultToolkit().createImage("icon.png");
         TrayIcon trayIcon = new TrayIcon(image, "Tray Demo");
         if(SystemTray.isSupported()){
@@ -34,7 +34,8 @@ public class timerta extends TimerTask {
 
 
         }
-
+        //Timer only starts when paused
+        //pausing timer will keep it at the same amount of seconds left
         if(MenuLayout.autoSaveOn){
             //time will go down by seconds
             time--;
