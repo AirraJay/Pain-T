@@ -86,7 +86,6 @@ public class MenuLayout {
         clearCanvas = new MenuItem("Clear Canvas");
         hideTimer = new MenuItem("Timer Off");
         tab = 0;
-
         select = new MenuItem("Select");
         clearSelect = new MenuItem("Select");
         copy = new MenuItem("Copy");
@@ -119,7 +118,7 @@ public class MenuLayout {
         Edit.getItems().addAll(select, copy, paste, move, rotateCan);
         rotateCan.getItems().addAll(rotateRight, rotateLeft, rotateRight180, rotateLeft180, rotateRight270, rotateLeft270, mirrorYAxis, mirrorXAxis);
 
-
+        //add items to Help
         Help.getItems().addAll(releaseNotes, About, HelpIt, hideTimer);
         currentTab = passM.getTabList().getSelectionModel().getSelectedIndex();
 
@@ -127,7 +126,7 @@ public class MenuLayout {
         timerta timerTask = new timerta(this);
         autoSaveTime.scheduleAtFixedRate(timerTask, 0, 1000);
 
-
+        //Sets up all function actions
         Save.setOnAction(actionEvent -> {
 
             if(saveFile == null){
@@ -159,7 +158,7 @@ public class MenuLayout {
         });SaveAs.setAccelerator(KeyCombination.keyCombination("Ctrl + Shift + S"));
         Open.setOnAction(actionEvent -> {
             addTab((passM));
-            openImage(saveFile, pickAFile, drawList.get(currentTab).getNewProject(), homeStage);});
+            openImage(null, pickAFile, drawList.get(currentTab).getNewProject(), homeStage);});
         Open.setAccelerator(KeyCombination.keyCombination("Ctrl + O" ));
         undo.setOnAction(actionEvent -> {getCurrentDraw().undo();});undo.setAccelerator(KeyCombination.keyCombination("Ctrl + Z"));
         redo.setOnAction(actionEvent -> {getCurrentDraw().redo();});redo.setAccelerator(KeyCombination.keyCombination("Ctrl + Y"));
@@ -313,6 +312,8 @@ public class MenuLayout {
         }));
     }
 
+
+    //opens files for help menu
     public void windowWithDialog(File f){
         Stage DialogStage = new Stage();
         TextArea ta = new TextArea();
@@ -360,6 +361,7 @@ public class MenuLayout {
             System.out.print((char) i);
         }
     }
+    //runs saving the file
     public void runSave() throws IOException {
         FileChooser pickIt = new FileChooser();
         Canvas project = getCurrentDraw().getNewProject();
@@ -367,6 +369,7 @@ public class MenuLayout {
         main mp = mainLocation;
         saveImageAs(pickIt, project, stage, mp);
     }
+    //rotation
     public void rotate(int howMuch){
         if(getCurrentDraw().getSelected() != null){
             Canvas layer2 = new Canvas(getCurrentDraw().getNewProject().getWidth(), getCurrentDraw().getNewProject().getHeight());
@@ -381,6 +384,7 @@ public class MenuLayout {
             getCurrentDraw().getNewProject().setRotate(getCurrentDraw().getNewProject().getRotate() + howMuch);
         }
      }
+     //Can choose file tho
     public static void saveImageAs(FileChooser pickIt, Canvas canvas, Stage stage, main mp) throws IOException {
         pickIt.setInitialFileName("Document");
         pickIt.getExtensionFilters().addAll(new FileChooser.ExtensionFilter("All Files", "*.jpg"));
@@ -418,6 +422,7 @@ public class MenuLayout {
             file = fc.showOpenDialog(stage);
         main.drawImage(file, canvas);
     }
+    //resets to previous data before selection
     public void reset(){
         UI.getPen().setSelected(false);
         UI.getTex().setSelected(false);
@@ -427,6 +432,7 @@ public class MenuLayout {
         isSelected = false;
         isPaste = false;
     }
+    //adds tab to tabs list
     public void addTab(main mp){
         tab++;
 

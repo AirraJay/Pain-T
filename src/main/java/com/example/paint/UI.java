@@ -81,7 +81,7 @@ public class UI {
         polygonSides.setText("Polygon Sides");
 
         whatShape = shapes.getValue();
-
+        //sets item abilities
         shapes.setOnAction(shapesb ->{
             whatShape = null;
             whatShape = shapes.getValue();
@@ -153,6 +153,7 @@ public class UI {
 
 
     }
+    //increases size
     public ImageView scale(File p){
         Image i = new Image(p.toURI().toString(), 25, 25,false, false);
         ImageView iv = new ImageView(i);

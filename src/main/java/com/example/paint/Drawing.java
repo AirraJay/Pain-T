@@ -130,13 +130,13 @@ public class Drawing {
 
                 switch (thisShape.toString()) {
                     case "Line": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawLine(gc, xMouse, yMouse, secondX, secondY);
                         break;
                     }
                     case "Square": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawSquare(gc, xMouse, yMouse, secondX, secondY);
                         try {
@@ -147,7 +147,6 @@ public class Drawing {
                         break;
                     }
                     case "Circle": {
-                        storedImage = undos.peek();
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawCircle(gc, xMouse, yMouse, secondX, secondY);
                         try {
@@ -158,7 +157,7 @@ public class Drawing {
                         break;
                     }
                     case "Rectangle": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawRectangle(gc, xMouse, yMouse, secondX, secondY);
                         try {
@@ -169,7 +168,7 @@ public class Drawing {
                         break;
                     }
                     case "Ellipse": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawEllipse(gc, xMouse, yMouse, secondX, secondY);
                         try {
@@ -180,7 +179,7 @@ public class Drawing {
                         break;
                     }
                     case "Polygon": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         if (UI.getPolygonSides().getText() != "Polygon Sides" && UI.getPolygonSides() != null) {
                             Shapes.drawPolygon(gc, Polysides, xMouse, yMouse, secondX, secondY);
@@ -195,7 +194,7 @@ public class Drawing {
                         break;
                     }
                     case "Round Rectangle": {
-                        storedImage = undos.peek();
+
                         gc.drawImage(storedImage, 0, 0);
                         Shapes.drawRoundRectangle(gc, xMouse, yMouse, secondX, secondY);
                         try {
